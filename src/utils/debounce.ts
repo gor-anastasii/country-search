@@ -1,12 +1,16 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function debounce<T extends (...args: any[]) => void>(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function debounce<T extends (...args: unknown[]) => void>(
   fn: T,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   delay: number,
 ): (...args: Parameters<T>) => void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
   return (...args: Parameters<T>) => {
-    // TODO: implement debounce
-    void args;
+    if (timer !== undefined) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(() => {
+      fn(...args);
+    }, delay);
   };
 }
