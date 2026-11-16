@@ -1,0 +1,39 @@
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();function e(e){let t=e.officialName??e.name,n=(e.currencies??[]).map(e=>e.symbol?`${e.name} (${e.symbol})`:e.name),r=(e.languages??[]).map(e=>e.name);return{name:e.name,officialName:t,flag:e.flags?.svg??e.flags?.png??e.flag??``,capital:e.capital||`Unknown`,region:e.region||`Unknown`,population:e.population,languages:r,area:e.area??0,borders:e.borders??[],currencies:n,description:`${t} is located in ${e.region||`an unknown region`}.`}}var t=class extends Error{status;constructor(e){super(`HTTP Error: ${e}`),this.status=e,this.name=`HttpError`}};async function n(e,n){let r=await fetch(`https://countries.dev/name/${encodeURIComponent(e)}`,{signal:n});if(r.status===404)return[];if(!r.ok)throw new t(r.status);return r.json()}function r(e,t=8e3){return AbortSignal.any([e.signal,AbortSignal.timeout(t)])}function i(e,t){let n,r=(...r)=>{n!==void 0&&clearTimeout(n),n=setTimeout(()=>{n=void 0,e(...r)},t)};return r.cancel=()=>{n!==void 0&&(clearTimeout(n),n=void 0)},r}function a(t,a,o){let s=null,c=i(async i=>{let c=new AbortController;s=c,o(!0);try{let a=(await n(i,r(c))).map(e);!c.signal.aborted&&s===c&&t(a)}catch(e){if(c.signal.aborted||s!==c||(typeof e==`object`&&e&&`name`in e?String(e.name):``)===`AbortError`)return;a(e)}finally{s===c&&(s=null,o(!1))}},300);function l(){s?.abort(),s=null,c.cancel(),o(!1)}return{search(e){l(),e.trim()?c(e.trim()):t([])},cancel:l}}function o(e,t){let n=document.createElement(`div`);n.className=`detail-item`;let r=document.createElement(`span`);r.className=`detail-label`,r.textContent=e;let i=document.createElement(`span`);return i.className=`detail-value`,i.textContent=t,n.append(r,i),n}function s(e){let t=document.createElement(`dialog`);t.className=`country-modal`;let n=document.createElement(`div`);n.className=`modal-content`;let r=document.createElement(`button`);r.className=`modal-close`,r.type=`button`,r.setAttribute(`aria-label`,`Close details`),r.innerHTML=`&times;`,r.addEventListener(`click`,()=>{t.close()});let i=document.createElement(`div`);i.className=`modal-header`;let a=document.createElement(`img`);a.className=`modal-flag`,a.src=e.flag,a.alt=`Flag of ${e.name}`;let s=document.createElement(`div`);s.className=`modal-heading`;let c=document.createElement(`h2`);c.textContent=e.name;let l=document.createElement(`p`);l.textContent=e.officialName,s.append(c,l),i.append(a,s);let u=document.createElement(`div`);u.className=`modal-divider`;let d=document.createElement(`h3`);d.className=`details-title`,d.textContent=`Country overview`;let f=document.createElement(`div`);return f.className=`details-grid`,f.append(o(`Capital`,e.capital||`Unknown`),o(`Region`,e.region||`Unknown`),o(`Population`,e.population.toLocaleString()),o(`Area`,`${e.area.toLocaleString()} km²`),o(`Languages`,e.languages.join(`, `)||`Unknown`),o(`Currencies`,e.currencies.join(`, `)||`Unknown`),o(`Border countries`,e.borders.join(`, `)||`None`)),n.append(r,i,u,d,f),t.append(n),t.addEventListener(`click`,e=>{e.target===t&&t.close()}),t}var c=document.querySelector(`#app`);if(!c)throw Error(`App container not found`);c.innerHTML=`
+  <main class="container">
+    <header class="page-header">
+      <div class="brand">
+        <span class="brand-icon">◎</span>
+        <span>WORLD ATLAS</span>
+      </div>
+
+      <div class="hero">
+        <span class="eyebrow">EXPLORE THE WORLD</span>
+        <h1>Discover every<br /><span>corner of the world.</span></h1>
+        <p>
+          Search for a country and explore its people,
+          places and fascinating details.
+        </p>
+      </div>
+    </header>
+
+    <section class="search-section">
+      <label class="search-box" for="search">
+        <span class="search-icon">⌕</span>
+        <input
+          id="search"
+          type="search"
+          placeholder="Search a country..."
+          autocomplete="off"
+        />
+        <span class="search-hint">SEARCH</span>
+      </label>
+    </section>
+
+    <div class="results-heading">
+      <h2>Explore countries</h2>
+      <p id="status" aria-live="polite"></p>
+    </div>
+
+    <section id="results" class="results"></section>
+  </main>
+`;var l=document.querySelector(`#search`),u=document.querySelector(`#results`),d=document.querySelector(`#status`),f=``;function p(){u.replaceChildren()}function m(e){let t=s(e);c.append(t),t.showModal(),t.addEventListener(`close`,()=>{t.remove()})}function h(e){let t=document.createElement(`article`);t.className=`country-card`,t.tabIndex=0,t.setAttribute(`role`,`button`),t.setAttribute(`aria-label`,`View details about ${e.name}`);let n=document.createElement(`div`);n.className=`card-flag`;let r=document.createElement(`img`);r.src=e.flag,r.alt=`Flag of ${e.name}`,r.loading=`lazy`,r.addEventListener(`error`,()=>{n.textContent=`🌍`,r.remove()}),n.append(r);let i=document.createElement(`div`);i.className=`card-content`;let a=document.createElement(`span`);a.className=`card-region`,a.textContent=e.region;let o=document.createElement(`h3`);o.textContent=e.name;let s=document.createElement(`p`);s.className=`card-capital`,s.textContent=e.capital||`Capital unknown`;let c=document.createElement(`div`);c.className=`card-footer`;let l=document.createElement(`span`);l.textContent=`POPULATION`;let u=document.createElement(`strong`);u.textContent=e.population.toLocaleString(),c.append(l,u),i.append(a,o,s,c),t.append(n,i);let d=()=>{m(e)};return t.addEventListener(`click`,d),t.addEventListener(`keydown`,e=>{(e.key===`Enter`||e.key===` `)&&(e.preventDefault(),d())}),t}function g(e){if(p(),e.length===0){d.textContent=``;let e=document.createElement(`div`);e.className=`state-card`;let t=document.createElement(`div`);t.className=`state-icon`,t.textContent=`⌕`;let n=document.createElement(`h3`);n.textContent=`No countries found`;let r=document.createElement(`p`);r.textContent=`We could not find a match. Try another country name.`,e.append(t,n,r),u.append(e);return}d.textContent=`${e.length} ${e.length===1?`COUNTRY`:`COUNTRIES`} FOUND`;let t=document.createElement(`div`);t.className=`country-grid`,e.forEach((e,n)=>{let r=h(e);r.style.animationDelay=`${n*50}ms`,t.append(r)}),u.append(t)}function _(e){p();let t=e instanceof Error?e.message:`Something went wrong. Please try again.`;d.textContent=``;let n=document.createElement(`div`);n.className=`state-card error-card`;let r=document.createElement(`div`);r.className=`state-icon`,r.textContent=`!`;let i=document.createElement(`h3`);i.textContent=`Something went wrong`;let a=document.createElement(`p`);a.textContent=t;let o=document.createElement(`button`);o.type=`button`,o.className=`retry-button`,o.textContent=`Try again`,o.addEventListener(`click`,()=>{f&&v.search(f)}),n.append(r,i,a,o),u.append(n)}var v=a(e=>{g(e)},e=>{typeof e==`object`&&e&&`name`in e&&e.name===`AbortError`||e!==null&&_(e)},e=>{if(e){p(),d.textContent=`SEARCHING...`,d.className=`loading-status`;let e=document.createElement(`div`);e.className=`loading-state`;let t=document.createElement(`div`);t.className=`spinner`;let n=document.createElement(`p`);n.textContent=`Exploring the world...`,e.append(t,n),u.append(e)}else d.className=``});l.addEventListener(`input`,()=>{f=l.value.trim(),p(),d.textContent=``,d.className=``,f?v.search(f):v.cancel()});
