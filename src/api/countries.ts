@@ -46,3 +46,23 @@ export async function searchCountries(
 
   return response.json() as Promise<CountryApiResponse[]>;
 }
+
+export type RequestErrorType = 'abort' | 'timeout' | 'http' | 'network';
+
+export function getRequestErrorType(error: unknown): RequestErrorType {
+  if (error instanceof Error) {
+    if (error.name === 'AbortError') {
+      return 'abort';
+    }
+
+    if (error.name === 'TimeoutError') {
+      return 'timeout';
+    }
+
+    if (error instanceof HttpError) {
+      return 'http';
+    }
+  }
+
+  return 'network';
+}
