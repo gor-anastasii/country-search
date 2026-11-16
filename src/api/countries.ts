@@ -1,4 +1,24 @@
-import type { CountryApiResponse } from '../types/country';
+import type { Country, CountryApiResponse } from '../types/country';
+
+export function mapCountryResponse(raw: CountryApiResponse): Country {
+  const currencies = Object.values(raw.currencies ?? {}).map((currency) =>
+    currency.symbol ? `${currency.name} (${currency.symbol})` : currency.name,
+  );
+
+  return {
+    name: raw.name.common,
+    officialName: raw.name.official,
+    flag: raw.flags.svg ?? raw.flags.png ?? '',
+    capital: raw.capital?.[0] ?? 'Unknown',
+    region: raw.region ?? 'Unknown',
+    population: raw.population,
+    languages: Object.values(raw.languages ?? {}),
+    area: raw.area ?? 0,
+    borders: raw.borders ?? [],
+    currencies,
+    description: `${raw.name.official} is located in ${raw.region ?? 'an unknown region'}.`,
+  };
+}
 
 export class HttpError extends Error {
   constructor(public status: number) {
