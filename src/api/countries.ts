@@ -66,3 +66,10 @@ export function getRequestErrorType(error: unknown): RequestErrorType {
 
   return 'network';
 }
+
+export function createRequestSignal(
+  controller: AbortController,
+  timeout = 8000,
+): AbortSignal {
+  return AbortSignal.any([controller.signal, AbortSignal.timeout(timeout)]);
+}
