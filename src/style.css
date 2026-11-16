@@ -90,3 +90,49 @@ button {
   color: white;
   cursor: pointer;
 }
+
+.status {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.loading-state {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.empty-state {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.error-state {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.success-state {
+  color: #15803d;
+}
+
+.retry-button {
+  display: block;
+  margin: 16px auto;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.retry-button:hover {
+  background: #1d4ed8;
+}
+
+.details {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f1f5f9;
+}

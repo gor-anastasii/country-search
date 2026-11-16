@@ -14,12 +14,6 @@ export function createSearchManager(
   let controller: AbortController | null = null;
 
   const runSearch = debounce(async (query: string) => {
-    if (!query.trim()) {
-      onResults([]);
-      onLoading(false);
-      return;
-    }
-
     const currentController = new AbortController();
     controller = currentController;
 
@@ -27,11 +21,9 @@ export function createSearchManager(
 
     try {
       const signal = createRequestSignal(currentController);
-
       const raw = await searchCountries(query, signal);
       const results = raw.map(mapCountryResponse);
 
-      // Не показываем результат отменённого запроса.
       if (
         !currentController.signal.aborted &&
         controller === currentController
@@ -39,12 +31,10 @@ export function createSearchManager(
         onResults(results);
       }
     } catch (error) {
-      // Запрос отменён новым вводом или очисткой поля.
       if (currentController.signal.aborted) {
         return;
       }
 
-      // Дополнительная защита от устаревшего запроса.
       if (controller !== currentController) {
         return;
       }
@@ -54,13 +44,10 @@ export function createSearchManager(
           ? String(error.name)
           : '';
 
-      // Таймаут — настоящая ошибка.
-      if (errorName === 'TimeoutError') {
-        onError(error);
+      if (errorName === 'AbortError') {
         return;
       }
 
-      // Любая другая ошибка также показывается пользователю.
       onError(error);
     } finally {
       if (controller === currentController) {
@@ -70,21 +57,30 @@ export function createSearchManager(
     }
   }, 300);
 
+  function cancel() {
+    controller?.abort();
+    controller = null;
+
+    runSearch.cancel();
+
+    onLoading(false);
+  }
+
   return {
     search(query: string) {
-      // Немедленно отменяем активный запрос.
-      controller?.abort();
-      controller = null;
+      cancel();
+
+      // Сразу очищаем предыдущую ошибку.
+      onError(null);
 
       if (!query.trim()) {
-        runSearch.cancel();
         onResults([]);
-        onLoading(false);
         return;
       }
 
-      onLoading(false);
-      runSearch(query);
+      runSearch(query.trim());
     },
+
+    cancel,
   };
 }
