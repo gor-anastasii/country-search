@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/api/countries.ts","./src/api/searchmanager.ts","./src/components/countrydetails.ts","./src/tests/countries.test.ts","./src/tests/debounce.test.ts","./src/tests/errors.test.ts","./src/tests/mapper.test.ts","./src/tests/race.test.ts","./src/types/country.ts","./src/utils/debounce.ts"],"version":"5.9.3"}
