@@ -1,22 +1,26 @@
 import type { Country, CountryApiResponse } from '../types/country';
 
 export function mapCountryResponse(raw: CountryApiResponse): Country {
-  const currencies = Object.values(raw.currencies ?? {}).map((currency) =>
+  const officialName = raw.officialName ?? raw.name;
+
+  const currencies = (raw.currencies ?? []).map((currency) =>
     currency.symbol ? `${currency.name} (${currency.symbol})` : currency.name,
   );
 
+  const languages = (raw.languages ?? []).map((language) => language.name);
+
   return {
-    name: raw.name.common,
-    officialName: raw.name.official,
-    flag: raw.flags.svg ?? raw.flags.png ?? '',
-    capital: raw.capital?.[0] ?? 'Unknown',
-    region: raw.region ?? 'Unknown',
+    name: raw.name,
+    officialName,
+    flag: raw.flags?.svg ?? raw.flags?.png ?? raw.flag ?? '',
+    capital: raw.capital || 'Unknown',
+    region: raw.region || 'Unknown',
     population: raw.population,
-    languages: Object.values(raw.languages ?? {}),
+    languages,
     area: raw.area ?? 0,
     borders: raw.borders ?? [],
     currencies,
-    description: `${raw.name.official} is located in ${raw.region ?? 'an unknown region'}.`,
+    description: `${officialName} is located in ${raw.region || 'an unknown region'}.`,
   };
 }
 

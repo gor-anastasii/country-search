@@ -70,16 +70,22 @@ describe('search race condition', () => {
       json: async () => [
         {
           name: 'Germany',
+          officialName: 'Federal Republic of Germany',
           capital: 'Berlin',
           region: 'Europe',
-          population: 84000000,
-          area: 357022,
+          population: 84_000_000,
+          area: 357_022,
           flag: '🇩🇪',
           flags: {
             svg: 'https://example.com/germany.svg',
           },
           borders: ['FRA', 'POL'],
-          languages: [{ name: 'German' }],
+          languages: [
+            {
+              name: 'German',
+              iso639_1: 'de',
+            },
+          ],
           currencies: [
             {
               code: 'EUR',
@@ -99,10 +105,14 @@ describe('search race condition', () => {
       expect.objectContaining({
         name: 'Germany',
         capital: 'Berlin',
+        region: 'Europe',
+        languages: ['German'],
+        currencies: ['Euro (€)'],
       }),
     ]);
 
     expect(onError).not.toHaveBeenCalled();
+
     expect(onLoading).toHaveBeenLastCalledWith(false);
   });
 });

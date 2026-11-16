@@ -4,28 +4,31 @@ import { mapCountryResponse } from '../api/countries';
 describe('mapCountryResponse', () => {
   it('should map API country data', () => {
     const raw = {
-      name: {
-        common: 'Spain',
-        official: 'Kingdom of Spain',
-      },
+      name: 'Spain',
+      officialName: 'Kingdom of Spain',
+      flag: '🇪🇸',
       flags: {
         png: 'https://example.com/spain.png',
         svg: 'https://example.com/spain.svg',
       },
-      capital: ['Madrid'],
+      capital: 'Madrid',
       region: 'Europe',
-      population: 47000000,
-      languages: {
-        spa: 'Spanish',
-      },
-      area: 505990,
+      population: 47_000_000,
+      languages: [
+        {
+          name: 'Spanish',
+          iso639_1: 'es',
+        },
+      ],
+      area: 505_990,
       borders: ['FRA', 'PRT'],
-      currencies: {
-        EUR: {
+      currencies: [
+        {
+          code: 'EUR',
           name: 'Euro',
           symbol: '€',
         },
-      },
+      ],
     };
 
     expect(mapCountryResponse(raw)).toEqual({
@@ -34,9 +37,9 @@ describe('mapCountryResponse', () => {
       flag: 'https://example.com/spain.svg',
       capital: 'Madrid',
       region: 'Europe',
-      population: 47000000,
+      population: 47_000_000,
       languages: ['Spanish'],
-      area: 505990,
+      area: 505_990,
       borders: ['FRA', 'PRT'],
       currencies: ['Euro (€)'],
       description: 'Kingdom of Spain is located in Europe.',

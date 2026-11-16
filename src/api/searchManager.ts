@@ -1,4 +1,9 @@
-import { searchCountries, mapCountryResponse } from './countries';
+import {
+  searchCountries,
+  mapCountryResponse,
+  createRequestSignal,
+} from './countries';
+
 import { debounce } from '../utils/debounce';
 
 export function createSearchManager(
@@ -15,36 +20,51 @@ export function createSearchManager(
       return;
     }
 
-    controller = new AbortController();
-    const currentController = controller;
+    const currentController = new AbortController();
+    controller = currentController;
 
     onLoading(true);
 
     try {
-      const signal = AbortSignal.any([
-        currentController.signal,
-        AbortSignal.timeout(8000),
-      ]);
+      const signal = createRequestSignal(currentController);
 
       const raw = await searchCountries(query, signal);
       const results = raw.map(mapCountryResponse);
 
-      if (!currentController.signal.aborted) {
+      // Не показываем результат отменённого запроса.
+      if (
+        !currentController.signal.aborted &&
+        controller === currentController
+      ) {
         onResults(results);
       }
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      // Запрос отменён новым вводом или очисткой поля.
+      if (currentController.signal.aborted) {
         return;
       }
 
-      if (error instanceof Error && error.name === 'TimeoutError') {
+      // Дополнительная защита от устаревшего запроса.
+      if (controller !== currentController) {
+        return;
+      }
+
+      const errorName =
+        typeof error === 'object' && error !== null && 'name' in error
+          ? String(error.name)
+          : '';
+
+      // Таймаут — настоящая ошибка.
+      if (errorName === 'TimeoutError') {
         onError(error);
         return;
       }
 
+      // Любая другая ошибка также показывается пользователю.
       onError(error);
     } finally {
       if (controller === currentController) {
+        controller = null;
         onLoading(false);
       }
     }
@@ -52,7 +72,18 @@ export function createSearchManager(
 
   return {
     search(query: string) {
+      // Немедленно отменяем активный запрос.
       controller?.abort();
+      controller = null;
+
+      if (!query.trim()) {
+        runSearch.cancel();
+        onResults([]);
+        onLoading(false);
+        return;
+      }
+
+      onLoading(false);
       runSearch(query);
     },
   };
