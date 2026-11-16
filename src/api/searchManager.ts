@@ -31,22 +31,15 @@ export function createSearchManager(
         onResults(results);
       }
     } catch (error) {
-      if (currentController.signal.aborted) {
-        return;
-      }
-
-      if (controller !== currentController) {
-        return;
-      }
+      if (currentController.signal.aborted) return;
+      if (controller !== currentController) return;
 
       const errorName =
         typeof error === 'object' && error !== null && 'name' in error
           ? String(error.name)
           : '';
 
-      if (errorName === 'AbortError') {
-        return;
-      }
+      if (errorName === 'AbortError') return;
 
       onError(error);
     } finally {
@@ -69,9 +62,6 @@ export function createSearchManager(
   return {
     search(query: string) {
       cancel();
-
-      // Сразу очищаем предыдущую ошибку.
-      onError(null);
 
       if (!query.trim()) {
         onResults([]);
